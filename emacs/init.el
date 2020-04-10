@@ -40,7 +40,7 @@ There are two things you can do about this warning:
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- '(default ((t (:height 180 :family "Courier New")))))
+ '(default ((t (:height 120 :family "Noto Sans Mono" :foundry "GOOG" :slant normal :weight normal :width normal)))))
 
 ;; Moving auto-save and auto-backup to ~/.emacs.d
 ;;(setq backup-directory-alist
@@ -66,16 +66,10 @@ There are two things you can do about this warning:
 (define-key global-map "\C-ca" 'org-agenda)
 (setq org-log-done t)
 
-;; PDF manipulation in org-mode
-
-;;(eval-after-load 'org '(require 'org-pdfview))
-;;(add-to-list 'org-file-apps 
-;;             '("\\.pdf\\'" . (lambda (file link)
-;;                                     (org-pdfview-open link))))
-
 ;; org-mode bullets
 ;;(require 'org-bullets)
 ;;(add-hook 'org-mode-hook (lambda () (org-bullets-mode 1)))
+
 
 ;; Evil Mode
 (require 'evil)
@@ -105,7 +99,15 @@ There are two things you can do about this warning:
 (require 'which-key)
 (which-key-mode)
 
+;; Linux Only Config
+(when (equal system-type 'gnu/linux)
+;; PDF manipulation in org-mode
 
+(eval-after-load 'org '(require 'org-pdfview))
+(add-to-list 'org-file-apps 
+             '("\\.pdf\\'" . (lambda (file link)
+                                     (org-pdfview-open link)))) 
+  )
 ;; Mac Only Config
 (when (equal system-type 'darwin)
 ;; LaTeX exportation for mac ONLY
