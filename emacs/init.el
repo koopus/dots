@@ -85,8 +85,13 @@ There are two things you can do about this warning:
 ;;===============================================
 ;; Moving auto-save and auto-backup from  ~/.emacs.d to home
 ;;===============================================
+;; Moving auto-save and auto-backup to ~/.emacs.d
+;;(setq backup-directory-alist
+;;      `((".*" . ,emacs-user-profile)))
 (setq backup-directory-alist
       `((".*" . "~/.emacs-backups/")))
+;;(setq auto-save-file-name-transforms
+;;      `((".*" ,emacs-user-profile t)))
 (setq auto-save-file-name-transforms
       `((".*" "~/.emacs-saves/" t)))
 
@@ -197,6 +202,12 @@ There are two things you can do about this warning:
 ;;==============================================
 
 (when (equal system-type 'gnu/linux)
+  (setq python-shell-interpreter "/usr/bin/python3")
+  (setq elpy-rpc-python-command "/usr/bin/python3")
+  (eval-after-load 'org '(require 'org-pdfview))
+  (add-to-list 'org-file-apps 
+               '("\\.pdf\\'" . (lambda (file link)
+                                 (org-pdfview-open link))))
   )
 
 ;;==============================================
