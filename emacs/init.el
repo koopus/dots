@@ -33,33 +33,78 @@ There are two things you can do about this warning:
  '(line-spacing 0.2)
  '(package-selected-packages
    (quote
-    (which-key calfw-org org-pdfview gruvbox-theme counsel ivy projectile elpygen helm elpy magit evil poet-theme)))
+    (jedi virtualenv elpy flycheck which-key calfw-org org-pdfview gruvbox-theme counsel ivy projectile helm magit evil poet-theme)))
  '(pdf-view-midnight-colors (quote ("#282828" . "#f2e5bc"))))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- '(default ((t (:height 120 :family "Noto Sans Mono" :foundry "GOOG" :slant normal :weight normal :width normal)))))
+ '(default ((t (:height 180 :family "Courier New")))))
 
-;; Moving auto-save and auto-backup to ~/.emacs.d
-;;(setq backup-directory-alist
-;;      `((".*" . ,emacs-user-profile)))
+;;**********************************************
+;; Coop's Personal init.el config
+;;**********************************************
+(defvar myPackages
+ '(elpy
+   flycheck
+   virtualenv
+   helm
+   ivy
+   magit
+   projectile
+   which-key
+   org-pdfview
+   jedi
+   counsel
+   )
+ )
+
+;; Scans the list in myPackages
+;; If the package listed is not already installed, install it
+
+(mapc #'(lambda (package)
+          (unless (package-installed-p package)
+            (package-install package)))
+      myPackages)
+
+;;==============================================
+;; Programming Config
+;;==============================================
+
+;;----------------------------------------------
+;; Python
+;;----------------------------------------------
+(setq elpy-rpc-virtualenv-path 'current)
+(elpy-enable)
+;; Enable Flycheck
+(when (require 'flycheck nil t)
+  (setq elpy-modules (delq 'elpy-module-flymake elpy-modules))
+  (add-hook 'elpy-mode-hook 'flycheck-mode))
+;;
+;;===============================================
+;; Moving auto-save and auto-backup from  ~/.emacs.d to home
+;;===============================================
 (setq backup-directory-alist
       `((".*" . "~/.emacs-backups/")))
-;;(setq auto-save-file-name-transforms
-;;      `((".*" ,emacs-user-profile t)))
 (setq auto-save-file-name-transforms
       `((".*" "~/.emacs-saves/" t)))
 
+;;===============================================
+;; in the event of a manual package install and not using package.el
 ;; Adding manual packages to path
 ;; Tell emacs where is your personal elisp lib dir
+;;===============================================
 (add-to-list 'load-path "~/.emacs.d/lisp/")
 
+;;==============================================
 ;; global line wrapping
+;;==============================================
 (global-visual-line-mode t)
 
-;; Org Mode things
+;;==============================================
+;; Org Mode config
+;;==============================================
 
 (require 'org)
 (define-key global-map "\C-cl" 'org-store-link)
@@ -70,13 +115,29 @@ There are two things you can do about this warning:
 ;;(require 'org-bullets)
 ;;(add-hook 'org-mode-hook (lambda () (org-bullets-mode 1)))
 
+;;==============================================
+;; PDF manipulation in org-mode (not working in mac so commented out)
+;;==============================================
 
-;; Evil Mode
-(require 'evil)
-(evil-mode 1)
+
+;;(eval-after-load 'org '(require 'org-pdfview))
+;;(add-to-list 'org-file-apps 
+;;             '("\\.pdf\\'" . (lambda (file link)
+;;                                     (org-pdfview-open link))))
+
+
+;;==============================================
+;; Evil Mode (if you really want it...)
+;;==============================================
+;;(require 'evil)
+;;(evil-mode 1)
 
 ;; enable elpy
 ;(elpy-enable)
+
+;;==============================================
+;;Improving emacs defaults
+;;==============================================
 
 ;; ivy rebinds
 (ivy-mode 1)
@@ -99,21 +160,19 @@ There are two things you can do about this warning:
 (require 'which-key)
 (which-key-mode)
 
-;; Linux Only Config
-(when (equal system-type 'gnu/linux)
-;; PDF manipulation in org-mode
+;;==============================================
+;; Mac Specific Config
+;;==============================================
 
-(eval-after-load 'org '(require 'org-pdfview))
-(add-to-list 'org-file-apps 
-             '("\\.pdf\\'" . (lambda (file link)
-                                     (org-pdfview-open link)))) 
-  )
-;; Mac Only Config
 (when (equal system-type 'darwin)
-;; LaTeX exportation for mac ONLY
- (setenv "PATH" (concat (getenv "PATH") ":/Library/TeX/texbin"))
 
-;; set PATH for ispell this is on mac, not sure if it is platfrom exclusive
+  ;; make python be the default interpreter, and default for elpy (seen in) 'M-x elpy-config'
+  (setq python-shell-interpreter "/usr/local/bin/python3")
+  (setq elpy-rpc-python-command "/usr/local/bin/python3")
+  
+  (setenv "PATH" (concat (getenv "PATH") ":/Library/TeX/texbin"))
+
+;; set path for ispell
  (setq ispell-program-name "/usr/local/bin/ispell")
 
 ;;; Install epdfinfo via 'brew install pdf-tools' and then install the
@@ -122,6 +181,7 @@ There are two things you can do about this warning:
 ;;; pdf-tools package using Emacs package system. If things get messed
 ;;; up, just do 'brew uninstall pdf-tools', wipe out the elpa
 ;;; pdf-tools package and reinstall both as at the start.
+
 ;;(use-package pdf-tools
 ;;  :ensure t
 ;;  :config
@@ -131,3 +191,14 @@ There are two things you can do about this warning:
 ;; (pdf-tools-install)
 
  )
+
+;;==============================================
+;; Linux Specific Config
+;;==============================================
+
+(when (equal system-type 'gnu/linux)
+  )
+
+;;==============================================
+;; Windows Specific Config
+;;==============================================
